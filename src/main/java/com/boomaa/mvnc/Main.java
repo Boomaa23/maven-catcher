@@ -1,5 +1,6 @@
 package com.boomaa.mvnc;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -7,6 +8,9 @@ import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
@@ -28,8 +32,20 @@ public class Main {
             InputStream in = socket.getInputStream();
             byte[] b = readInStream(in);
             HTTPParser initReq = new HTTPParser(b);
+            Path reqRoute = Paths.get(System.getProperty("user.dir") + "/cached/" + initReq.getRoute());
 
             System.out.println(initReq);
+
+            if (Files.exists(reqRoute)) {
+                System.out.println("Using cached file\n");
+                OutputStream out = socket.getOutputStream();
+                byte[] fileBytes = Files.readAllBytes(reqRoute);
+                HTTPBuilder bldr = new HTTPBuilder();
+                bldr.appendText("HTTP/1.1 200 OK").appendHeader("Content-length", fileBytes.length).makeLine();
+                out.write(ArrayUtils.concat(bldr.build(), fileBytes));
+                socket.close();
+                continue;
+            }
 
             boolean foundRemote = false;
             for (String upstr : UPSTREAM) {
@@ -58,6 +74,12 @@ public class Main {
                         OutputStream out = socket.getOutputStream();
                         out.write(bldr.build());
                         socket.close();
+
+                        Files.createDirectories(reqRoute.getParent());
+                        FileOutputStream cache = new FileOutputStream(reqRoute.toFile());
+                        cache.write(bldr.getBody());
+                        cache.close();
+
                         System.out.println(bldr);
                         System.out.println();
                         foundRemote = true;

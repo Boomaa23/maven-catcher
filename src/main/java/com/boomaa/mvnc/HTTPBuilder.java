@@ -1,7 +1,5 @@
 package com.boomaa.mvnc;
 
-import java.util.stream.Stream;
-
 public class HTTPBuilder {
     private final StringBuilder sb;
     private byte[] body;
@@ -30,6 +28,10 @@ public class HTTPBuilder {
     public HTTPBuilder setBody(byte[] body) {
         this.body = body;
         return this;
+    }
+
+    public byte[] getBody() {
+        return body;
     }
 
     public byte[] build() {
