@@ -14,18 +14,12 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
-public class Main {
-    private static final String[] UPSTREAM = new String[] {
-            "https://jcenter.bintray.com",
-            "https://repo1.maven.org/maven2",
-            "https://frcmaven.wpi.edu/artifactory/release",
-            "https://devsite.ctr-electronics.com/maven/release",
-            "https://www.revrobotics.com/content/sw/color-sensor-v3/sdk/maven",
-            "https://maven.octyl.net/repository/team5818-releases"
-    };
-
+public class Server {
     public static void main(String[] args) throws IOException {
         ServerSocket server = new ServerSocket(80);
+        System.out.println("Starting server on port 80");
+        List<String> upstream = Files.readAllLines(Paths.get("proxies.conf"));
+
         while (true) {
             Socket socket = server.accept();
 
@@ -48,7 +42,7 @@ public class Main {
             }
 
             boolean foundRemote = false;
-            for (String upstr : UPSTREAM) {
+            for (String upstr : upstream) {
                 try {
                     HttpURLConnection conn = (HttpURLConnection) new URL(upstr + initReq.getRoute()).openConnection();
                     conn.setInstanceFollowRedirects(true);
