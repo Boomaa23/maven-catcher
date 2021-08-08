@@ -24,7 +24,7 @@ public class HTTPParser {
                 break;
             }
             int ioColon = headerMsg.indexOf(':');
-            headers.put(headerMsg.substring(0, ioColon), headerMsg.substring(ioColon + 1, headerMsg.indexOf("\r\n")));
+            headers.put(headerMsg.substring(0, ioColon), headerMsg.substring(ioColon + 2, headerMsg.indexOf("\r\n")));
         } while ((ioLineSep = headerMsg.indexOf("\r\n")) != -1);
 
         this.message = headerMsg.substring(2);
@@ -54,9 +54,9 @@ public class HTTPParser {
     public String toString() {
         return "HTTPParser{" +
                 "method='" + method + '\'' +
-                ", route='" + route + '\'' +
-                ", headers=" + headers +
-                ", message='" + message + '\'' +
+                ", \nroute='" + route + '\'' +
+                ", \nheaders=" + headers +
+                ", \nmessage='" + message + '\'' +
                 '}';
     }
 }

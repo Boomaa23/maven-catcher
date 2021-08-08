@@ -1,7 +1,10 @@
 package com.boomaa.mvnc;
 
+import java.util.stream.Stream;
+
 public class HTTPBuilder {
     private final StringBuilder sb;
+    private byte[] body;
 
     public HTTPBuilder() {
         this.sb = new StringBuilder();
@@ -24,8 +27,14 @@ public class HTTPBuilder {
         return this;
     }
 
+    public HTTPBuilder setBody(byte[] body) {
+        this.body = body;
+        return this;
+    }
+
     public byte[] build() {
-        return sb.toString().getBytes();
+        byte[] data = sb.toString().getBytes();
+        return body != null ? ArrayUtils.concat(data, body) : data;
     }
 
     @Override
